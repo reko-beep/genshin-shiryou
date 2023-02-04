@@ -1,5 +1,5 @@
 from pydantic import BaseModel, validator, Field
-from routes import AMBRROUTES, HEADERS
+from constants import HEADERS
 
 
 class CharacterPartial(BaseModel):
@@ -53,6 +53,7 @@ class MaterialPartial(BaseModel):
     icon: str
     type : str
     recipe : bool
+    amount : int = 0
     
     class Config:
         validate_assignment = True
@@ -60,6 +61,14 @@ class MaterialPartial(BaseModel):
     @validator("icon", pre=True, allow_reuse=True)
     def get_icon_url(cls, v):
         return f"https://api.ambr.top/assets/UI/{v}"
+    
+    @validator("amount", pre=True, allow_reuse=True)
+    def parse_amount(cls, v):
+        
+        if v != None:
+            return v
+        return 0
+            
     
 class WeaponPartial(BaseModel):
     
