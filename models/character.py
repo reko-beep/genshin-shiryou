@@ -89,11 +89,49 @@ class OtherInfo(BaseModel):
     namecard: Namecard 
     specialfood : SpecialFood
     
+
+class CharacterTalentLevel(BaseModel):
+    level : int
+    mora : int = Field(alias='coinCost')
+    materials : list[MaterialPartial] = Field(alias='costItems')
+    description : list[str] 
+    params : list[int | float]
     
-     
-
-
-
+    @validator('materials', pre=True, allow_reuse=True)
+    def parse_materials(cls, v):
+        result = []
+        if v is not None:         
+            for i in v:
+                result.append(MaterialPartial({'id': int(i), 'amount': v[i]}))
+        return result
+                
+class CharacterTalent(BaseModel):
+    
+    type: int
+    name : str
+    description : str
+    icon : str
+    upgrade : CharacterTalentLevel = Field(alias='promote')
+    
+    @validator('upgrade', pre=True, allow_reuse=True)
+    def parse_upgrade(cls, v):
+        result = []
+        for l in v:
+            result.append(CharacterTalentLevel(**v[l]))
+        return result
+    
+    @validator('icon', pre=True, allow_reuse=True)
+    def get_icon_url(cls, v):
+        return f"https://api.ambr.top/assets/UI/{v}"
+class CharacterConstellation(BaseModel):
+    
+    name: str
+    description : str
+    icon : str
+    
+    @validator('icon', pre=True, allow_reuse=True)
+    def get_icon_url(cls, v):
+        return 
 
 class CharacterDetails(BaseModel):
     
@@ -106,7 +144,12 @@ class CharacterDetails(BaseModel):
     route : str
     info: CharacterInfo = Field(alias='fetter')
     ascension : CharacterAscension = Field(alias='upgrade')
+    talent : CharacterTalent
+    constellation : CharacterConstellation
     
+    @validator('icon', pre=True, allow_reuse=True)
+    def get_icon_url(cls, v):
+        return f"https://api.ambr.top/assets/UI/{v}"
     
     @validator('ascension', pre=True, allow_reuse=True)
     def parse_ascension(cls, v):
@@ -115,4 +158,12 @@ class CharacterDetails(BaseModel):
     
         return None
         
+    @validator('talent', pre=True, allow_reuse=True)
+    def parse_talent(cls, v):
+        result = []
+        if len(v) != 0:
+            for l in v:
+                result.append(CharacterTalent(**v[l]))               
+            
     
+        return result

@@ -124,5 +124,5 @@ class FoodPartial(BaseModel):
         return f"https://api.ambr.top/assets/UI/{v}"
 
     @validator("effecticon", pre=True, allow_reuse=True)
-    def get_icon_url(cls, v):
+    def get_effecticon_url(cls, v):
         return f"https://api.ambr.top/assets/UI/{v}"

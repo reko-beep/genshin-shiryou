@@ -14,3 +14,4 @@ Data repository of Genshin Impact to be used by bot.
 # Models done
 
 > * [X] Materials
+> * [X] Characters
